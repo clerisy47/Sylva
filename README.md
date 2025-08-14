@@ -1,108 +1,206 @@
-# EZ-Tree
+# Fractal Tree Forest - Three.js
 
-![NPM Version](https://img.shields.io/npm/v/%40dgreenheck%2Fez-tree)
-![NPM Downloads](https://img.shields.io/npm/dw/%40dgreenheck%2Fez-tree)
-![GitHub Repo stars](https://img.shields.io/github/stars/dgreenheck/ez-tree)
-![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/dangreenheck)
-![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCrdx_EU_Wx8_uBfqO0cI-9Q)
+A sophisticated Three.js application that generates procedural fractal trees with realistic textures, wind animation, and multiple tree species.
 
-<p align="center">
-<img src="https://github.com/user-attachments/assets/cb5f5edd-3e1b-453d-925f-734965126b17">
-</p>
+## 🚀 Quick Start
 
-# About
-EZ-Tree is a procedural tree generator with dozens of tunable parameters. The standalone tree generation code is published as a library and can be imported into your own application for dynamically generating trees on demand. Additionally, there is a standalone web app which allows you to create trees within the browser and export as .PNG or .GLB files.
-
-# App
-https://eztree.dev
-
-# Installation
-
-```js
-npm i @dgreenheck/ez-tree
-```
-
-# Usage
-
-```js
-// Create new instance
-const tree = new Tree();
-
-// Set parameters
-tree.options.seed = 12345;
-tree.options.trunk.length = 20;
-tree.options.branch.levels = 3;
-
-// Generate tree and add to your Three.js scene
-tree.generate();
-scene.add(tree);
-```
-
-Any time the tree parameters are changed, you must call `generate()` to regenerate the geometry.
-
-# Running Standalone App Locally
-
-To run the standalone app locally, you first need to build the EZ-Tree library before running the app.
-
+### Development Server
 ```bash
 npm install
-npm run app
+npm run dev
 ```
 
-# Running App with Docker
+This will:
+- Install dependencies (Vite, Three.js)
+- Start the development server on `http://localhost:3000`
+- Automatically open the fractal forest in your browser
+- Enable hot reloading for development
+
+## 🛠️ Development Commands
 
 ```bash
-docker compose build
-docker compose up -d
+npm run dev      # Start Vite development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm start        # Alias for npm run dev
 ```
 
-# Tree Parameters
+## 📁 Project Structure
 
-The `TreeOptions` class defines an options object that controls various parameters of a procedurally generated tree. Each property of this object allows for customization of the tree's appearance, including bark, branches, and leaves. Below is a detailed explanation of each property of the `TreeOptions` object.
+```
+fractal-tree-forest/
+├── index.html             # Main application entry point
+├── main.js                # Core fractal forest application
+├── tree.js                # Tree generation class
+├── branch.js              # Branch geometry and structure
+├── options.js             # Tree configuration parameters
+├── textures.js            # Texture loading and management
+├── enums.js               # Tree type enumerations
+├── rng.js                 # Seeded random number generator
+├── assets/                # Texture assets
+│   ├── bark/              # Bark textures (AO, Color, Normal, Roughness)
+│   └── leaves/            # Leaf textures
+├── presets/               # Pre-configured tree types
+├── package.json           # Node.js dependencies
+├── vite.config.js         # Vite configuration
+└── README.md              # This file
+```
 
-## General Properties
+## Features
 
-- **`seed`**: Sets the initial value for random generation, ensuring consistent tree generation when using the same seed.
-- **`type`**: Defines the type of the tree, which can be set to one of the options from the `TreeType` enumeration (e.g., `TreeType.Deciduous`).
+🌳 **Procedural Tree Generation**
+- Multiple tree species (Oak, Pine, Ash, Aspen, Birch, Willow)
+- Fractal branching algorithms
+- Realistic bark and leaf textures
+- Customizable tree parameters
 
-## Bark Parameters
+🍃 **Dynamic Effects**
+- Real-time wind animation using GLSL shaders
+- Dynamic leaf movement with Simplex noise
+- Seasonal color variations
 
-The `bark` object controls the appearance and properties of the tree trunk.
+🎮 **Interactive Scene**
+- Mouse orbit controls
+- Zoom in/out with scroll wheel
+- Multiple camera angles
+- 25+ generated trees per scene
 
-- **`type`**: Specifies the type of bark texture to use, selected from the `BarkType` enumeration (e.g., `BarkType.Oak`).
-- **`tint`**: Determines the color tint applied to the bark, defined as a hexadecimal color value (e.g., `0xffffff` for white).
-- **`flatShading`**: Boolean property indicating whether to use flat shading (`true`) or smooth shading (`false`) for the bark.
-- **`textured`**: Boolean value that indicates if a texture is applied to the bark (`true` or `false`).
-- **`textureScale`**: Controls the scale of the bark texture in both the `x` and `y` axes. It is an object with properties `x` and `y` to define the scaling factors.
+🎨 **Visual Quality**
+- High-quality PBR textures
+- Shadow mapping
+- Atmospheric fog
+- Tone mapping for realistic lighting
 
-## Branch Parameters
+## Project Structure
 
-The `branch` object defines parameters for the trunk and branch levels of the tree.
+```
+├── main.js              # Main Three.js application
+├── tree.js              # Core tree generation class
+├── branch.js            # Branch geometry and structure
+├── options.js           # Tree configuration parameters
+├── textures.js          # Texture loading and management
+├── enums.js             # Tree type enumerations
+├── rng.js               # Seeded random number generator
+├── index.html           # Web page entry point
+├── assets/              # Texture assets
+│   ├── bark/           # Bark textures (AO, Color, Normal, Roughness)
+│   └── leaves/         # Leaf textures
+└── presets/            # Pre-configured tree types
+    ├── oak_*.json      # Oak tree variations
+    ├── pine_*.json     # Pine tree variations
+    ├── ash_*.json      # Ash tree variations
+    └── ...
+```
 
-- **`levels`**: Number of recursive branch levels. Setting this to `0` creates only the trunk, while higher values add more branches.
-- **`angle`**: Defines the angle, in degrees, at which child branches grow relative to their parent branch. This is specified separately for each level.
-- **`children`**: Specifies the number of child branches at each level, with the index (`0`, `1`, `2`, etc.) representing the level.
-- **`force`**: Represents an external directional force encouraging tree growth, defined by `direction` (a vector object `{ x, y, z }`) and `strength` (a numeric value).
-- **`gnarliness`**: Defines how twisted or curled each branch level should be, specified for each level.
-- **`length`**: Length of the branches at each level. This is an object with keys representing each level.
-- **`radius`**: Radius (or thickness) of the branches at each level.
-- **`sections`**: Number of segments along the length of each branch level, controlling the resolution of the branch mesh.
-- **`segments`**: Number of radial segments that make up each branch, with a higher value resulting in a smoother cylinder.
-- **`start`**: Specifies where along the parent branch (as a fraction from `0` to `1`) the child branches should start forming.
-- **`taper`**: Controls the tapering of the branches at each level. A value between `0` and `1` defines the reduction in radius from base to tip.
-- **`twist`**: Defines the amount of twisting applied to each branch level.
+## Tree Generation Algorithm
 
-## Leaf Parameters
+The fractal tree generation follows these principles:
 
-The `leaves` object defines properties that control the appearance and placement of leaves.
+1. **Recursive Branching**: Each branch can spawn child branches at configurable levels
+2. **Realistic Physics**: Growth forces, twist, and gnarliness parameters
+3. **Procedural Variation**: Seeded random generation for consistent but varied results
+4. **Texture Mapping**: UV-mapped bark and billboard leaf textures
+5. **Level-of-Detail**: Configurable segment/section counts per branch level
 
-- **`type`**: Specifies the type of leaf texture, selected from the `LeafType` enumeration (e.g., `LeafType.Oak`).
-- **`billboard`**: Defines how leaves are rendered. The `Billboard` enumeration can be set to `Single` or `Double` to indicate single or perpendicular double-sided leaves.
-- **`angle`**: Defines the angle of the leaves relative to the parent branch, in degrees.
-- **`count`**: Number of leaves to generate.
-- **`start`**: Specifies where along the length of the branch (as a value between `0` and `1`) leaves should start growing.
-- **`size`**: Size of the leaves, represented as a numeric value.
-- **`sizeVariance`**: Specifies how much variance in size each leaf instance should have, making the leaves look more natural.
-- **`tint`**: Tint color applied to the leaves, defined as a hexadecimal color value (e.g., `0xffffff` for white).
-- **`alphaTest`**: Sets the alpha threshold for leaf transparency, controlling the transparency of the leaf textures.
+## Tree Parameters
 
+### Branch Properties
+- `levels`: Number of recursive branch levels (0 = trunk only)
+- `length`: Length of branches at each level
+- `radius`: Thickness of branches at each level  
+- `angle`: Branching angle from parent branch
+- `children`: Number of child branches per level
+- `sections`: Number of cylindrical sections per branch
+- `segments`: Number of radial segments per section
+- `taper`: Branch thickness reduction along length
+- `gnarliness`: Random branch curvature/twist
+- `start`: Where along parent branch children spawn (0-1)
+
+### Leaf Properties
+- `type`: Leaf texture (Oak, Pine, Ash, Aspen)
+- `count`: Number of leaves per terminal branch
+- `size`: Leaf billboard size
+- `billboard`: Single or double-sided leaf planes
+- `angle`: Leaf orientation relative to branch
+- `alphaTest`: Transparency cutoff for leaf textures
+
+### Bark Properties
+- `type`: Bark texture set (Oak, Pine, Birch, Willow)
+- `textured`: Enable/disable PBR texturing
+- `tint`: Color tint overlay
+- `textureScale`: UV repeat scaling
+
+## Usage
+
+1. **Local Development**:
+   ```bash
+   python3 -m http.server 8000
+   # Open http://localhost:8000 in browser
+   ```
+
+2. **Controls**:
+   - Click and drag to orbit camera
+   - Scroll wheel to zoom in/out
+   - Trees automatically animate with wind
+
+3. **Customization**:
+   ```javascript
+   // Create custom tree
+   const options = new TreeOptions();
+   options.seed = 12345;
+   options.branch.levels = 4;
+   options.leaves.type = LeafType.Oak;
+   
+   const tree = new Tree(options);
+   tree.generate();
+   scene.add(tree);
+   ```
+
+## Technical Details
+
+### Geometry Generation
+- Procedural cylinder generation for branches
+- UV mapping for seamless texture application
+- Optimized triangle indexing
+- Billboard quads for leaves
+
+### Shader Effects
+- Custom GLSL wind animation
+- Simplex noise for natural movement
+- Time-based oscillation with multiple frequencies
+- Vertex displacement in world space
+
+### Performance
+- Efficient geometry batching
+- Texture atlas optimization
+- Shadow map optimization
+- Frustum culling ready
+
+## Tree Species Available
+
+- **Oak**: Classic deciduous with broad leaves
+- **Pine**: Evergreen conifer with needle textures  
+- **Ash**: Tall deciduous with compound leaves
+- **Aspen**: Slender with distinctive bark
+- **Birch**: White bark with small leaves
+- **Willow**: Drooping branches (via parameter tuning)
+
+## Preset Configurations
+
+Pre-built tree configurations are available:
+- Small, Medium, Large variants
+- Bush configurations
+- Species-specific optimal parameters
+- Seasonal variations
+
+## Browser Requirements
+
+- Modern browser with WebGL 2.0 support
+- ES6 module support
+- Hardware acceleration recommended
+
+## Credits
+
+Built with Three.js r165
+Textures: High-quality PBR bark and leaf materials
+Algorithms: Procedural L-system inspired branching
