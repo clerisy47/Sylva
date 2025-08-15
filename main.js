@@ -14,8 +14,12 @@ class SimpleFractalForest {
     this.init();
     this.setupLights();
     this.createGround();
-    this.generateForest();
+    this.initializeForest();
     this.animate();
+  }
+
+  async initializeForest() {
+    await this.generateForest();
   }
 
   init() {
@@ -123,10 +127,19 @@ class SimpleFractalForest {
     this.scene.add(ground);
   }
 
-  generateForest() {
+  async generateForest() {
     console.log('🌲 Generating fractal forest...');
     
-    // Generate random trees
+    // Define available presets
+    const presetNames = [
+      'ash_small', 'ash_medium', 'ash_large',
+      'aspen_small', 'aspen_medium', 'aspen_large', 
+      'bush_1', 'bush_2', 'bush_3',
+      'oak_small', 'oak_medium', 'oak_large',
+      'pine_small', 'pine_medium', 'pine_large'
+    ];
+    
+    // Generate random trees using presets
     for (let i = 0; i < 15; i++) {
       try {
         const x = (Math.random() - 0.5) * 80;
@@ -135,76 +148,23 @@ class SimpleFractalForest {
         // Skip if too close to center
         if (Math.sqrt(x * x + z * z) < 15) continue;
 
-        const options = this.createRandomTreeOptions();
-        const tree = new Tree(options);
+        // Select random preset
+        const randomPreset = presetNames[Math.floor(Math.random() * presetNames.length)];
+        
+        const tree = new Tree();
+        await tree.loadPreset(randomPreset);
         tree.position.set(x, 0, z);
         tree.generate();
         this.scene.add(tree);
         this.trees.push(tree);
         
-        console.log(`🌳 Tree ${i + 1} generated at (${x.toFixed(1)}, ${z.toFixed(1)})`);
+        console.log(`🌳 Tree ${i + 1} (${randomPreset}) generated at (${x.toFixed(1)}, ${z.toFixed(1)})`);
       } catch (error) {
         console.warn(`❌ Failed to generate tree ${i + 1}:`, error);
       }
     }
 
     console.log(`✅ Generated ${this.trees.length} trees successfully!`);
-  }
-
-  createRandomTreeOptions() {
-    const options = new TreeOptions();
-    
-    // Basic settings
-    options.seed = Math.floor(Math.random() * 100000);
-    options.type = Math.random() > 0.6 ? TreeType.Evergreen : TreeType.Deciduous;
-    
-    // Bark settings
-    const barkTypes = Object.values(BarkType);
-    options.bark.type = barkTypes[Math.floor(Math.random() * barkTypes.length)];
-    options.bark.tint = this.getRandomBarkColor();
-    options.bark.textureScale.y = 3 + Math.random() * 7;
-    
-    // Branch settings
-    options.branch.levels = 2 + Math.floor(Math.random() * 2); // 2-3 levels
-    
-    // Simplified branch parameters
-    for (let level = 0; level <= options.branch.levels; level++) {
-      if (level > 0) {
-        options.branch.angle[level] = 25 + Math.random() * 40;
-        options.branch.children[level - 1] = 3 + Math.floor(Math.random() * 4);
-        options.branch.start[level] = 0.3 + Math.random() * 0.4;
-      }
-      
-      options.branch.length[level] = (8 + Math.random() * 15) * (1 - level * 0.25);
-      options.branch.radius[level] = (0.4 + Math.random() * 0.8) * (1 - level * 0.15);
-      options.branch.gnarliness[level] = Math.random() * 0.2;
-      options.branch.taper[level] = 0.5 + Math.random() * 0.3;
-      options.branch.sections[level] = Math.max(4, 10 - level * 2);
-      options.branch.segments[level] = Math.max(4, 8 - level);
-    }
-    
-    // Leaf settings
-    const leafTypes = Object.values(LeafType);
-    options.leaves.type = leafTypes[Math.floor(Math.random() * leafTypes.length)];
-    options.leaves.billboard = Math.random() > 0.5 ? Billboard.Double : Billboard.Single;
-    options.leaves.count = 3 + Math.floor(Math.random() * 12);
-    options.leaves.size = 1.2 + Math.random() * 1.5;
-    options.leaves.sizeVariance = 0.2 + Math.random() * 0.4;
-    options.leaves.angle = 5 + Math.random() * 25;
-    options.leaves.start = Math.random() * 0.2;
-    options.leaves.tint = this.getRandomLeafColor();
-    
-    return options;
-  }
-
-  getRandomBarkColor() {
-    const colors = [0x8B4513, 0xA0522D, 0x654321, 0x915C3A, 0x7D6553, 0x5D4037];
-    return colors[Math.floor(Math.random() * colors.length)];
-  }
-
-  getRandomLeafColor() {
-    const colors = [0x228B22, 0x32CD32, 0x006400, 0x9ACD32, 0x8FBC8F, 0xFF6347, 0xFFA500, 0xDC143C];
-    return colors[Math.floor(Math.random() * colors.length)];
   }
 
   animate() {
